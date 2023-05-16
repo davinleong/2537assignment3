@@ -16,19 +16,19 @@ const updatePaginationDiv = (currentPage, numPages) => {
   let startPage = Math.max(1, currentPage - 2); // Display 2 pages before the current page
   let endPage = Math.min(startPage + 4, numPages); // Display 4 pages in total
 
-  
+
   for (let i = startPage; i <= endPage; i++) {
     $('#pagination').append(`
       <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
     `);
   }
 
-    // Next button
-    if (currentPage < numPages) {
-      $('#pagination').append(`
+  // Next button
+  if (currentPage < numPages) {
+    $('#pagination').append(`
         <button class="btn btn-primary page ml-1 nextButton" value="${currentPage + 1}">></button>
       `);
-    }
+  }
 
 
 }
@@ -115,7 +115,24 @@ const setup = async () => {
     updatePaginationDiv(currentPage, numPages)
   })
 
-}
+// Event listener for previous button
+$('body').on('click', '.prevButton', async function (e) {
+  currentPage = Number(e.target.value);
+  paginate(currentPage, PAGE_SIZE, pokemons)
 
+  updatePaginationDiv(currentPage, numPages)
+  }
+);
+
+// Event listener for next button
+$('body').on('click', '.nextButton', async function (e) {
+  currentPage = Number(e.target.value);
+  paginate(currentPage, PAGE_SIZE, pokemons)
+
+  updatePaginationDiv(currentPage, numPages)
+  }
+);
+
+}
 
 $(document).ready(setup)
