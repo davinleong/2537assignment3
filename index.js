@@ -2,7 +2,6 @@ const PAGE_SIZE = 10
 let currentPage = 1;
 let pokemons = []
 
-
 const updatePaginationDiv = (currentPage, numPages) => {
   $('#pagination').empty();
 
@@ -36,8 +35,18 @@ const updatePaginationDiv = (currentPage, numPages) => {
       `);
   }
 
-
+  // Show count information
+  $('#pagination').append(`
+    <div class="countInfo">Displayed: ${PAGE_SIZE} | Total Pokémons: ${pokemons.length}</div>
+  `);
+  ;
 }
+
+  // Function to display the count information
+  const showCountInfo = (currentPage, numPages, pokemons) => {
+    $('.countInfo').text(`Displayed: ${PAGE_SIZE} | Total Pokémons: ${pokemons.length}`);
+  };
+
 
 const paginate = async (currentPage, PAGE_SIZE, pokemons) => {
   selected_pokemons = pokemons.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
@@ -55,11 +64,15 @@ const paginate = async (currentPage, PAGE_SIZE, pokemons) => {
         </div>  
         `)
   })
+
+  // Show count information
+  showCountInfo(currentPage, Math.ceil(pokemons.length / PAGE_SIZE), pokemons.length);
+
 }
 
-const setup = async () => {
-  // test out poke api using axios here
 
+
+const setup = async () => {
 
   $('#pokeCards').empty()
   let response = await axios.get('https://pokeapi.co/api/v2/pokemon?offset=0&limit=810');
@@ -121,23 +134,23 @@ const setup = async () => {
     updatePaginationDiv(currentPage, numPages)
   })
 
-// Event listener for previous button
-$('body').on('click', '.prevButton', async function (e) {
-  currentPage = Number(e.target.value);
-  paginate(currentPage, PAGE_SIZE, pokemons)
+  // Event listener for previous button
+  $('body').on('click', '.prevButton', async function (e) {
+    currentPage = Number(e.target.value);
+    paginate(currentPage, PAGE_SIZE, pokemons)
 
-  updatePaginationDiv(currentPage, numPages)
+    updatePaginationDiv(currentPage, numPages)
   }
-);
+  );
 
-// Event listener for next button
-$('body').on('click', '.nextButton', async function (e) {
-  currentPage = Number(e.target.value);
-  paginate(currentPage, PAGE_SIZE, pokemons)
+  // Event listener for next button
+  $('body').on('click', '.nextButton', async function (e) {
+    currentPage = Number(e.target.value);
+    paginate(currentPage, PAGE_SIZE, pokemons)
 
-  updatePaginationDiv(currentPage, numPages)
+    updatePaginationDiv(currentPage, numPages)
   }
-);
+  );
 
 }
 
