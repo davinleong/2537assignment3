@@ -1,6 +1,7 @@
 const PAGE_SIZE = 10
 let currentPage = 1;
 let pokemons = []
+let selectedTypes = [];
 
 const updatePaginationDiv = (currentPage, numPages) => {
   $('#pagination').empty();
@@ -170,28 +171,33 @@ const setup = async () => {
   }
   );
 
-// Event listener for type checkboxes
-$('body').on('change', '.typeCheckbox', async function () {
-  const selectedTypes = $('.typeCheckbox:checked').map(function () {
-    return $(this).val();
-  }).get();
+  // Event listener for type checkboxes
+  $('body').on('change', '.typeCheckbox', async function () {
+    const selectedTypes = $('.typeCheckbox:checked').map(function () {
+      return $(this).val();
+    }).get();
 
-  // Filter pokemons based on selected types
-  filteredPokemons = pokemons.filter(pokemon => {
-    for (const type of pokemon.types) {
-      if (selectedTypes.includes(type)) {
-        return true;
+    // Filter pokemons based on selected types
+    filteredPokemons = pokemons.filter(pokemonName=> {
+      const pokemon = pokemons.find(p => p.name === pokemonName);
+      if (!pokemon) return false; // Pokemon not found
+      const res = axios.get(pokemon.url);
+      const types = res.data.types.map(typeData => typeData.type.name);
+      for (const type of types) {
+        if (selectedTypes.includes(type)) {
+          return true;
+        }
       }
-    }
-    return false;
+      return false;
+    });
+
+    // Update pagination and display filtered pokemons
+    currentPage = 1;
+    const numPages = Math.ceil(filteredPokemons.length / PAGE_SIZE);
+    paginate(currentPage, PAGE_SIZE, filteredPokemons);
+    updatePaginationDiv(currentPage, numPages);
   });
 
-  // Update pagination and display filtered pokemons
-  currentPage = 1;
-  const numPages = Math.ceil(filteredPokemons.length / PAGE_SIZE);
-  paginate(currentPage, PAGE_SIZE);
-  updatePaginationDiv(currentPage, numPages);
-});
 
 }
 
