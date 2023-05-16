@@ -42,10 +42,10 @@ const updatePaginationDiv = (currentPage, numPages) => {
   ;
 }
 
-  // Function to display the count information
-  const showCountInfo = (currentPage, numPages, pokemons) => {
-    $('.countInfo').text(`Displayed: ${PAGE_SIZE} | Total Pokémons: ${pokemons.length}`);
-  };
+// Function to display the count information
+const showCountInfo = (currentPage, numPages, pokemons) => {
+  $('.countInfo').text(`Displayed: ${PAGE_SIZE} | Total Pokémons: ${pokemons.length}`);
+};
 
 
 const paginate = async (currentPage, PAGE_SIZE, pokemons) => {
@@ -70,13 +70,31 @@ const paginate = async (currentPage, PAGE_SIZE, pokemons) => {
 
 }
 
-
-
 const setup = async () => {
 
   $('#pokeCards').empty()
+  // Fetch list of Pokemon
   let response = await axios.get('https://pokeapi.co/api/v2/pokemon?offset=0&limit=810');
   pokemons = response.data.results;
+
+  // Fetch types of Pokemon
+  let typesResponse = await axios.get('https://pokeapi.co/api/v2/type');
+  types = typesResponse.data.results;
+
+  // Create the checkbox group for types
+  const typeCheckboxGroup = types.map(type => `
+    <div class="form-check form-check-inline">
+      <input class="form-check-input typeCheckbox" type="checkbox" value="${type.name}" id="${type.name}">
+      <label class="form-check-label" for="${type.name}">
+        ${type.name}
+      </label>
+    </div>
+  `).join('');
+
+  // Append the checkbox group to the page
+  $('#typeFilter').append(typeCheckboxGroup);
+
+
 
 
   paginate(currentPage, PAGE_SIZE, pokemons)
@@ -151,6 +169,29 @@ const setup = async () => {
     updatePaginationDiv(currentPage, numPages)
   }
   );
+
+// Event listener for type checkboxes
+$('body').on('change', '.typeCheckbox', async function () {
+  const selectedTypes = $('.typeCheckbox:checked').map(function () {
+    return $(this).val();
+  }).get();
+
+  // Filter pokemons based on selected types
+  filteredPokemons = pokemons.filter(pokemon => {
+    for (const type of pokemon.types) {
+      if (selectedTypes.includes(type)) {
+        return true;
+      }
+    }
+    return false;
+  });
+
+  // Update pagination and display filtered pokemons
+  currentPage = 1;
+  const numPages = Math.ceil(filteredPokemons.length / PAGE_SIZE);
+  paginate(currentPage, PAGE_SIZE);
+  updatePaginationDiv(currentPage, numPages);
+});
 
 }
 
