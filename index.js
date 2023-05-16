@@ -4,15 +4,32 @@ let pokemons = []
 
 
 const updatePaginationDiv = (currentPage, numPages) => {
-  $('#pagination').empty()
+  $('#pagination').empty();
 
-  const startPage = 1;
-  const endPage = numPages;
+  // Previous button
+  if (currentPage > 1) {
+    $('#pagination').append(`
+      <button class="btn btn-primary page ml-1 prevButton" value="${currentPage - 1}"><</button>
+    `);
+  }
+
+  let startPage = Math.max(1, currentPage - 2); // Display 2 pages before the current page
+  let endPage = Math.min(startPage + 4, numPages); // Display 4 pages in total
+
+  
   for (let i = startPage; i <= endPage; i++) {
     $('#pagination').append(`
-    <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
-    `)
+      <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
+    `);
   }
+
+    // Next button
+    if (currentPage < numPages) {
+      $('#pagination').append(`
+        <button class="btn btn-primary page ml-1 nextButton" value="${currentPage + 1}">></button>
+      `);
+    }
+
 
 }
 
