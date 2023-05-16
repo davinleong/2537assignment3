@@ -18,9 +18,15 @@ const updatePaginationDiv = (currentPage, numPages) => {
 
 
   for (let i = startPage; i <= endPage; i++) {
-    $('#pagination').append(`
-      <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
+    if (i == currentPage) { // Highlight current page
+      $('#pagination').append(`
+      <button class="btn btn-info page ml-1 numberedButtons" value="${i}">${i}</button>
     `);
+    } else {
+      $('#pagination').append(`
+        <button class="btn btn-primary page ml-1 numberedButtons" value="${i}">${i}</button>
+      `);
+    }
   }
 
   // Next button
